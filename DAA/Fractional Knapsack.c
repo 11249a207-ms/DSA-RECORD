@@ -3,9 +3,10 @@ struct Item
 {
     int Weight;
     int Value;
-    float PPW; // Profit Per Weight
+    float PPW;
 };
 
+// Standard bubble sort to get the best items to the front of the list
 void sort(struct Item items[], int n) 
 {
     struct Item temp;
@@ -13,6 +14,7 @@ void sort(struct Item items[], int n)
     {
         for (int j = 0; j < n - i - 1; j++) 
         {
+            // Sorting in descending order (highest ratio first)
             if (items[j].PPW < items[j + 1].PPW) 
             {
                 temp = items[j];
@@ -22,6 +24,7 @@ void sort(struct Item items[], int n)
         }
     }
 
+    // Just a quick print check to make sure the sorting actually worked
     printf("Items sorted by value/weight ratio:\n");
     for (int i = 0; i < n; i++) 
     {
@@ -38,35 +41,38 @@ int main()
     printf("Enter number of items: ");
     scanf("%d", &n);
 
-    struct Item items[n];
+    struct Item items[n]; // Array of structs based on the user's count
 
     printf("Enter weight and value of each item:\n");
     for (int i = 0; i < n; i++) 
     {
         printf("Item %d: ", i + 1);
         scanf("%d %d", &items[i].Weight, &items[i].Value);
+        // Cast to float here or the division will cut off the decimals!
         items[i].PPW = (float)items[i].Value / items[i].Weight;
     }
 
     printf("Enter knapsack capacity: ");
     scanf("%f", &capacity);
 
+    // Call the sort before we start picking items
     sort(items, n);
 
     float totalProfit = 0.0;
     for (int i = 0; i < n; i++) 
     {
+        // Case 1: The whole item fits, so just take it all
         if (capacity >= items[i].Weight) 
         {
-      
             totalProfit += items[i].Value;
             capacity -= items[i].Weight;
         } 
+        // Case 2: We can't fit the whole thing, so take a "slice" (Fractional Knapsack)
         else
         {
-          
+            // Remaining capacity * value per unit of weight
             totalProfit += items[i].PPW * capacity;
-            capacity = 0; // Knapsack is now full
+            capacity = 0; // Bag is full, we're done here
             break;
         }
     }
